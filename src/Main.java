@@ -12,7 +12,7 @@ public class Main {
             try (PreparedStatement stmt = connection.prepareStatement(sql);
                  ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    System.out.println("Database time: " + rs.getTimestamp(1));
+                    System.out.println("our Database time: " + rs.getTimestamp(1));
                 }
             }
         } catch (SQLException e) {
