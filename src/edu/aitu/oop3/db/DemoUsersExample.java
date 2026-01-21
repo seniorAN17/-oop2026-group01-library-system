@@ -10,7 +10,7 @@ public class DemoUsersExample {
         try (Connection connection = DatabaseConnection.getConnection()) {
             createTableIfNeeded(connection);
             insertUser(connection,"Askar", "Tulegenov", "askar.tulegenov@uni.kz");
-            insertUser(connection, "Madina", "Kairatova", "madina.kairatova@uni.kz");
+            insertUser(connection, "Madina",  "Kairatova", "madina.kairatova@uni.kz");
             printAllUsers(connection);
         } catch (SQLException e) {
             System.out.println("Database error:");
