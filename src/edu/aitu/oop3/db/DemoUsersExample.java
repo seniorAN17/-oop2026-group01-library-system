@@ -1,9 +1,8 @@
 package edu.aitu.oop3.db;
-import edu.aitu.oop3.db.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+
 public class DemoUsersExample {
     public static void main(String[] args) {
         System.out.println("Demo: create table, insert, select");
@@ -18,6 +17,11 @@ public class DemoUsersExample {
             insertCourse(connection, "CS101", "Introduction to Programming", 5);
             insertCourse(connection, "CS102", "Object-Oriented Programming", 5);
             insertCourse(connection, "CS201", "Data Structures", 4);
+
+            // enrollment data
+            insertenrollments(connection, 1, 1);
+            insertenrollments(connection, 2, 2);
+            insertenrollments(connection, 3, 2);
 
             printAllUsers(connection);
             printAllCourses(connection);
@@ -81,6 +85,26 @@ email varchar(100) unique not null
             System.out.println("Inserted courses: " + rows);
         }
     }
+    // enrollment insert
+    private static void insertenrollments(
+            Connection connection,
+            int student_id,
+            int course_id
+    ) throws SQLException {
 
+        String sql = """
+    insert into enrollments (student_id, course_id)
+    values (?, ?)
+    on conflict (student_id, course_id) do nothing;
+    """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, student_id);
+            stmt.setInt(2, course_id);
+
+            int rows = stmt.executeUpdate();
+            System.out.println("Inserted enrollments: " + rows);
+        }
+    }
 
 }
