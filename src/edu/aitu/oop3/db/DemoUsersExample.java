@@ -8,15 +8,31 @@ public class DemoUsersExample {
     public static void main(String[] args) {
         System.out.println("Demo: create table, insert, select");
         try (Connection connection = DatabaseConnection.getConnection()) {
+
+            // instructors data
             createTableIfNeeded(connection);
             insertUser(connection,"Askar", "Tulegenov", "askar.tulegenov@uni.kz");
-            insertUser(connection, "Madina",  "Kairatova", "madina.kairatova@uni.kz");
+            insertUser(connection, "Madina", "Kairatova", "madina.kairatova@uni.kz");
+
+            // courses data
+            insertCourse(connection, "CS101", "Introduction to Programming", 5);
+            insertCourse(connection, "CS102", "Object-Oriented Programming", 5);
+            insertCourse(connection, "CS201", "Data Structures", 4);
+
             printAllUsers(connection);
+            printAllCourses(connection);
+
         } catch (SQLException e) {
-            System.out.println("Database error:");
             e.printStackTrace();
         }
     }
+
+    private static void printAllUsers(Connection connection) {
+    }
+
+    private static void printAllCourses(Connection connection) {
+    }
+
     private static void createTableIfNeeded(Connection connection) throws SQLException {
         String sql = """
 create table if not exists instructors (
@@ -42,18 +58,29 @@ email varchar(100) unique not null
             System.out.println("Inserted rows: " + rows);
         }
     }
-    private static void printAllUsers(Connection connection) throws SQLException {
-        String sql = "select id, first_name, last_name, email from instructors order by id";
-        try (PreparedStatement stmt = connection.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            System.out.println("Current users:");
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String first_name = rs.getString("first_name");
-                String last_name = rs.getString("last_name");
-                String email = rs.getString("email");
-                System.out.printf("%d | %s | %s | %s%n", id, first_name, last_name, email);
-            }
+    //courses data insert
+    private static void insertCourse(
+            Connection connection,
+            String courseCode,
+            String title,
+            int credits
+    ) throws SQLException {
+
+        String sql = """
+    insert into courses (course_code, title, credits)
+    values (?, ?, ?)
+    on conflict (course_code) do nothing;
+    """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, courseCode);
+            stmt.setString(2, title);
+            stmt.setInt(3, credits);
+
+            int rows = stmt.executeUpdate();
+            System.out.println("Inserted courses: " + rows);
         }
     }
+
+
 }
