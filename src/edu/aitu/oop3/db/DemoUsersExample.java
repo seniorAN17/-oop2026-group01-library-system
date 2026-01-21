@@ -9,8 +9,8 @@ public class DemoUsersExample {
         System.out.println("Demo: create table, insert, select");
         try (Connection connection = DatabaseConnection.getConnection()) {
             createTableIfNeeded(connection);
-            insertUser(connection, "Alice", "alice@example.com");
-            insertUser(connection, "Bob", "bob@example.com");
+            insertUser(connection,"Askar", "Tulegenov", "askar.tulegenov@uni.kz");
+            insertUser(connection, "Madina", "Kairatova", "madina.kairatova@uni.kz");
             printAllUsers(connection);
         } catch (SQLException e) {
             System.out.println("Database error:");
@@ -19,37 +19,40 @@ public class DemoUsersExample {
     }
     private static void createTableIfNeeded(Connection connection) throws SQLException {
         String sql = """
-create table if not exists demo_users (
+create table if not exists instructors (
 id serial primary key,
-name varchar(100) not null,
+first_name varchar(50) not null,
+last_name varchar(50),
 email varchar(100) unique not null
 );
 """;
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.execute();
-            System.out.println("Table demo_users is ready.");
+            System.out.println("Table students is ready.");
         }
     }
-    private static void insertUser(Connection connection, String name, String email) throws SQLException {
-        String sql = "insert into demo_users (name, email) values (?, ?) " +
+    private static void insertUser(Connection connection, String first_name, String last_name, String email) throws SQLException {
+        String sql = "insert into instructors (first_name, last_name, email) values (?, ?, ?) " +
                 "on conflict (email) do nothing;";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, name);
-            stmt.setString(2, email);
+            stmt.setString(1, first_name);
+            stmt.setString(2, last_name);
+            stmt.setString(3, email);
             int rows = stmt.executeUpdate();
             System.out.println("Inserted rows: " + rows);
         }
     }
     private static void printAllUsers(Connection connection) throws SQLException {
-        String sql = "select id, name, email from demo_users order by id";
+        String sql = "select id, first_name, last_name, email from instructors order by id";
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             System.out.println("Current users:");
             while (rs.next()) {
                 int id = rs.getInt("id");
-                String name = rs.getString("name");
+                String first_name = rs.getString("first_name");
+                String last_name = rs.getString("last_name");
                 String email = rs.getString("email");
-                System.out.printf(" %d | %s | %s%n", id, name, email);
+                System.out.printf("%d | %s | %s | %s%n", id, first_name, last_name, email);
             }
         }
     }
